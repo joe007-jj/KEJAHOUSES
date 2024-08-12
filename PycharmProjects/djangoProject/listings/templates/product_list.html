@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product List</title>
+    <style>
+        .top-right-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .product-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .product-list li {
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .product-list img, .product-list video {
+            display: block;
+            margin-bottom: 10px;
+        }
+        .product-list .actions a {
+            margin-right: 10px;
+            display: inline-block;
+            padding: 5px 10px;
+            font-size: 14px;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-bottom: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .product-list .actions a:hover {
+            background-color: #0056b3;
+        }
+        .product-list .actions a.delete-button {
+            background-color: #dc3545;
+        }
+        .product-list .actions a.delete-button:hover {
+            background-color: #c82333;
+        }
+        .product-list .actions a.add-review-button {
+            background-color: #28a745;
+        }
+        .product-list .actions a.add-review-button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+{% extends 'base.html' %}
+
+{% block title %}Product List{% endblock %}
+
+{% block content %}
+    {% if is_house_owner %}
+        <a href="{% url 'list_product' %}" class="top-right-button">List Product</a>
+    {% endif %}
+
+    <form method="get" action="">
+    <label for="category">Category:</label>
+    <select name="category" id="category">
+        <option value="">All</option>
+        <option value="for_rent" {% if request.GET.category == 'for_rent' %}selected{% endif %}>For Rent</option>
+        <option value="for_sale" {% if request.GET.category == 'for_sale' %}selected{% endif %}>For Sale</option>
+        {% for code, name in form.fields.category.choices %}
+            <option value="{{ code }}" {% if request.GET.category == code %}selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Filter</button>
+    </form>
+    <ul class="product-list">
+        {% for product in products %}
+            <li>
+                <h2>{{ product.name }}</h2>
+                <p>{{ product.description }}</p>
+                <p>Price: Ksh {{ product.price }}</p>
+                <p>Category: {{ product.get_category_display }}</p>
+                <div class="media-container">
+                    {% for image in product.images.all %}
+                        <img src="{{ image.image.url }}" alt="{{ product.name }}" class="media-item">
+                    {% endfor %}
+                    {% for video in product.videos.all %}
+                        <video controls class="media-item">
+                            <source src="{{ video.video.url }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    {% endfor %}
+                </div>
+
+                <div class="actions">
+                    {% if product.owner == request.user %}
+                        <a href="{% url 'edit_product' product.id %}" class="edit-button">Edit</a>
+                        <a href="{% url 'delete_product' product.id %}" class="delete-button">Delete</a>
+                    {% endif %}
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'add_review' product.id %}" class="add-review-button">Add Review</a>
+                    {% endif %}
+                </div>
+                <h3>Reviews:</h3>
+                {% for review in product.reviews.all %}
+                    <div>
+                        <strong>{{ review.user.username }}:</strong>
+                        <p>Rating: {{ review.rating }}</p>
+                        <p>{{ review.comment }}</p>
+                    </div>
+                {% empty %}
+                    <p>No reviews yet</p>
+                {% endfor %}
+            </li>
+        {% endfor %}
+    </ul>
+    <style>
+        .product-list{
+            list-style-type: none;
+            padding: 0;
+        }
+        .product-list li {
+            border: 1px solid  #ddd;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .media-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .media-item {
+            max-width: 200px;
+            max-height: 150px;
+        }
+        .product-list .actions a {
+            margin-right: 10px;
+        }
+    </style>
+{% endblock %}
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List a Product</title>
+</head>
+<body>
+{% extends 'base.html' %}
+
+{% block title %}List Product{% endblock %}
+
+{% block content %}
+    <h1>List a Product</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ product_form.as_p }}
+        {{ image_formset.management_form }}
+        {% for form in image_formset %}
+            {{ form.as_p }}
+        {% endfor %}
+        {{ video_formset.management_form }}
+        {% for form in video_formset %}
+            {{ form.as_p }}
+        {% endfor %}
+        <button type="submit">Submit</button>
+    </form>
+{% endblock %}
+</body>
+</html>

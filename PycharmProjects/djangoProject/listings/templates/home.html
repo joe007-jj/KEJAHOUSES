@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        .center-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 18px;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+        }
+        .center-button:hover {
+            background-color: #0056b3;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .product-list li {
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .product-list .actions a {
+            margin-right: 10px;
+            display: inline-block;
+            padding: 5px 10px;
+            font-size: 14px;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-bottom: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .product-list .actions a:hover {
+            background-color: #0056b3;
+        }
+        form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        select, button[type="submit"] {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        select {
+            background-color: #f8f9fa;
+        }
+        button[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            border: none;
+        }
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .view-products-button {
+            display: inline-block;
+            padding: 10px;
+            font-size: 18px;
+            color: white;
+            background-color: #28a745;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: darkblue;
+        }
+        .view-products-button:hover {
+            background-color: #218838;
+        }
+        .profile-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 18px;
+            color: white;
+            background-color: #28a745;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+        }
+        .profile-button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+
+<body>
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+    <h1>KEJA HOUSES</h1>
+
+    {% if user.is_authenticated %}
+        <p>Welcome, {{ user.username }}!</p>
+        <div class="button-container">
+            <a href="{% url 'list_product' %}" class="top-right-button">List Product</a>
+            <a href="{% url 'product_list' %}" class="view-products-button">View Houses</a>
+            <a href="{% url 'profile' %}" class="profile-button">My Profile</a>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="center-button">Logout</button>
+            </form>
+        </div>
+    {% else %}
+        <div class="button-container">
+        <a href="{% url 'login' %}" class="center-button">Login</a>
+        <a href="{% url 'register' %}" class="center-button">Register</a>
+        </div>
+    {% endif %}
+
+    <form method="get" action="">
+        <label for="category">Category</label>
+        <select name="category" id="category">
+            <option value="">All</option>
+            <option value="for_rent" {% if request.GET.category == 'for_rent' %}selected{% endif %}>For Rent</option>
+            <option value="for_sale" {% if request.GET.category == 'for_sale' %}selected{% endif %}>For Sale</option>
+        </select>
+        <button type="submit">Filter</button>
+    </form>
+    {% include '_product_list.html' %}
+{% endblock %}
+</body>
+</html>

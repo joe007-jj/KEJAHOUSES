@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product</title>
+</head>
+<body>
+{% extends 'base.html' %}
+
+{% block title %}Edit Product{% endblock %}
+
+{% block content %}
+    <h1>Edit Product</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ product_form.as_p }}
+        {{ image_formset.management_form }}
+        {{ video_formset.management_form }}
+
+        <h2>Images</h2>
+        {% for form in image_formset %}
+            {{ form.as_p }}
+        {% endfor %}
+
+        <h2>Videos</h2>
+        {% for form in video_formset %}
+            {{ form.as_p }}
+        {% endfor %}
+
+        <button type="submit">Save Changes</button>
+    </form>
+    <a href="{% url 'product_list' %}">Cancel</a>
+{% endblock %}
+</body>
+</html>
